@@ -1,0 +1,2 @@
+1. Implement https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker#example
+2. Refactor with Decorator pattern
