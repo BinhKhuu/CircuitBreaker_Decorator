@@ -18,10 +18,10 @@ namespace WebApplication1.Decorators
                 _circuitBreaker.CheckIfCircuitBreakerTimeStampIsComplete();
                 if (!_circuitBreaker.isCircuitOpen)
                 {
-                    var forcasts = _weatherService.GetWeatherForecast();
+                    var forecasts = _weatherService.GetWeatherForecast();
                     // success reset circuit possible concurrency issues.
                     _circuitBreaker.RecordCircuitBreakerEnd();
-                    return forcasts;
+                    return forecasts;
                 }
                 return null;
             }
