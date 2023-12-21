@@ -7,8 +7,6 @@ namespace WebApplication1.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-
-
         private readonly ILogger<WeatherForecastController> _logger;
         private readonly IWeatherService _weatherService;
 
@@ -19,16 +17,21 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        public IActionResult  Get()
         {
             try
             {
                 var request = _weatherService.GetWeatherForecast();
-                return request.ToList();
+                if (request == null)
+                {
+                    // returns 400 error when circuit is open
+                    return BadRequest("Service is down");
+                }
+                return Ok(request.ToList());
             }
             catch (Exception ex)
             {
-                //return Enumerable.Empty<WeatherForecast>();
+                // returns 500 error 
                 throw ex;
             }
             
