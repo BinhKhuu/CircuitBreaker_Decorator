@@ -1,4 +1,6 @@
-﻿using WebApplication1.Interfaces;
+﻿using System.ComponentModel;
+using WebApplication1.CustomException;
+using WebApplication1.Interfaces;
 using WebApplication1.Shared;
 
 namespace WebApplication1.Services
@@ -16,7 +18,12 @@ namespace WebApplication1.Services
 
         public IEnumerable<WeatherForecast> GetWeatherForecast()
         {
-            throw new Exception(); //simulate error
+            //while (true)
+            //    throw new exception();
+
+            while (true)
+                throw new CircuitBreakerException();
+
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

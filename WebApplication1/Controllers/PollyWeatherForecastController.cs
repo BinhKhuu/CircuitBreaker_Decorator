@@ -1,32 +1,40 @@
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.CustomException;
+using Polly.Retry;
+using Polly;
 using WebApplication1.Interfaces;
+using System.Threading;
+using Polly.CircuitBreaker;
+using WebApplication1.Services;
+using WebApplication1.Decorators;
+using WebApplication1.CustomException;
 
 namespace WebApplication1.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class PollyWeatherForecastController : ControllerBase
     {
         private readonly ILogger<WeatherForecastController> _logger;
         private readonly IWeatherService _weatherService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IWeatherService weatherService)
+        public PollyWeatherForecastController(ILogger<WeatherForecastController> logger, IWeatherService weatherService)
         {
             _logger = logger;
             _weatherService = weatherService;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IActionResult Get()
+        [HttpGet(Name = "GetPollyWeatherForecast")]
+        async public Task<IActionResult> Get()
         {
             try
             {
-                var request = _weatherService.GetWeatherForecast();
+                var weatherService = new PollyWeatherServiceDecorator(new WeatherService());
+                var request = weatherService.GetWeatherForecast();
                 if (request == null)
                 {
                     // returns 400 error when circuit is open
-                    return BadRequest("Service is down");
+                    
                 }
                 return Ok(request.ToList());
             }
@@ -39,7 +47,7 @@ namespace WebApplication1.Controllers
                 // returns 500 error 
                 throw ex;
             }
-            
+
         }
     }
 }
